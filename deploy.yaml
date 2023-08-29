@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: deploycontain
-          image: devrajdock/caps1:latest
+          image: devrajdock/websitemaster:latest
           ports:
-            - containerPort: 80
+            - containerPort: 84
 ...
