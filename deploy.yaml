@@ -19,5 +19,5 @@ spec:
         - name: deploycontain
           image: devrajdock/websitemaster:latest
           ports:
-            - containerPort: 84
+            - containerPort: 80
 ...
