@@ -1,0 +1,183 @@
+Started by user dev
+[Pipeline] Start of Pipeline
+[Pipeline] properties
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/k8sjob
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $DOCKERHUB_CREDENTIALS or $DOCKERHUB_CREDENTIALS_PSW
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Git)
+[Pipeline] node
+Running on k8smaster in /var/lib/jenkins/workspace/k8sjob
+[Pipeline] {
+[Pipeline] git
+The recommended git tool is: NONE
+No credentials specified
+Fetching changes from the remote Git repository
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/k8sjob/.git # timeout=10
+ > git config remote.origin.url https://github.com/DevGitRemote/website.git # timeout=10
+Fetching upstream changes from https://github.com/DevGitRemote/website.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://github.com/DevGitRemote/website.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Checking out Revision 863a1e9a226d22414c28e110b8c6211ce92fdbe6 (refs/remotes/origin/master)
+Commit message: "Update deploy.yaml"
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 863a1e9a226d22414c28e110b8c6211ce92fdbe6 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master 863a1e9a226d22414c28e110b8c6211ce92fdbe6 # timeout=10
+ > git rev-list --no-walk 863a1e9a226d22414c28e110b8c6211ce92fdbe6 # timeout=10
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Develop Branch Task)
+[Pipeline] node
+Running on k8smaster in /var/lib/jenkins/workspace/k8sjob
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+Running task on develop branch
+[Pipeline] sh
++ git checkout develop
+Switched to branch 'develop'
+Your branch is behind 'origin/develop' by 2 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+[Pipeline] sh
++ docker build /var/lib/jenkins/workspace/k8sjob -t devrajdock/websitedevelop:latest
+Sending build context to Docker daemon  1.229MB
+
+Step 1/5 : FROM ubuntu:latest
+ ---> 01f29b872827
+Step 2/5 : RUN apt update -y
+ ---> Using cache
+ ---> bfafefeb5916
+Step 3/5 : RUN apt install apache2 -y
+ ---> Using cache
+ ---> 80b132a63dc7
+Step 4/5 : ADD . /var/www/html
+ ---> 05517b6e1e11
+Step 5/5 : ENTRYPOINT apachectl -D FOREGROUND
+ ---> Running in 62a8fb77fabc
+Removing intermediate container 62a8fb77fabc
+ ---> 0691db758395
+Successfully built 0691db758395
+Successfully tagged devrajdock/websitedevelop:latest
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [DOCKERHUB_CREDENTIALS_PSW]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ echo ****
++ docker login -u devrajdock --password-stdin
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[Pipeline] sh
++ docker push devrajdock/websitedevelop:latest
+The push refers to repository [docker.io/devrajdock/websitedevelop]
+fcf744d3785b: Preparing
+a4391435873c: Preparing
+0665a7c41f02: Preparing
+bce45ce613d3: Preparing
+bce45ce613d3: Layer already exists
+0665a7c41f02: Layer already exists
+a4391435873c: Layer already exists
+fcf744d3785b: Pushed
+latest: digest: sha256:cb6077b61c77656b424199cbd8a1c0a04411d10ecc3720791961da9cc8c542f0 size: 1164
+[Pipeline] sh
++ docker logout
+Removing login credentials for https://index.docker.io/v1/
+[Pipeline] sh
++ kubectl apply -f ./developname.yml
+namespace/developspace created
+[Pipeline] sh
++ kubectl apply -f ./developdeploy.yml -n developspace
+deployment.apps/deploy created
+[Pipeline] sh
++ kubectl apply -f ./developsvc.yml -n developspace
+service/svc created
+[Pipeline] }
+[Pipeline] // script
+Post stage
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+First task succeeded. Triggering the second task...
+[Pipeline] sh
++ git checkout master
+Switched to branch 'master'
+[Pipeline] sh
++ docker build /var/lib/jenkins/workspace/k8sjob -t devrajdock/websitemaster:latest
+Sending build context to Docker daemon  2.114MB
+
+Step 1/5 : FROM ubuntu:latest
+ ---> 01f29b872827
+Step 2/5 : RUN apt update -y
+ ---> Using cache
+ ---> bfafefeb5916
+Step 3/5 : RUN apt install apache2 -y
+ ---> Using cache
+ ---> 80b132a63dc7
+Step 4/5 : ADD . /var/www/html
+ ---> cd40ea18297b
+Step 5/5 : ENTRYPOINT apachectl -D FOREGROUND
+ ---> Running in ee6251c85cb5
+Removing intermediate container ee6251c85cb5
+ ---> 2d00348ec8da
+Successfully built 2d00348ec8da
+Successfully tagged devrajdock/websitemaster:latest
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [DOCKERHUB_CREDENTIALS_PSW]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ docker login -u devrajdock --password-stdin
++ echo ****
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[Pipeline] sh
++ docker push devrajdock/websitemaster:latest
+The push refers to repository [docker.io/devrajdock/websitemaster]
+c025a665889f: Preparing
+a4391435873c: Preparing
+0665a7c41f02: Preparing
+bce45ce613d3: Preparing
+bce45ce613d3: Layer already exists
+0665a7c41f02: Layer already exists
+a4391435873c: Layer already exists
+c025a665889f: Pushed
+latest: digest: sha256:f84cac3513b63a1d7e1e100d3d95c7dbcbf4129cd9ce8115040d4d0aef0c90c7 size: 1164
+[Pipeline] sh
++ docker logout
+Removing login credentials for https://index.docker.io/v1/
+[Pipeline] sh
++ kubectl apply -f ./mastername.yml
+namespace/masterspace created
+[Pipeline] sh
++ kubectl apply -f ./deploy.yaml -n masterspace
+deployment.apps/deploy created
+[Pipeline] sh
++ kubectl apply -f ./svc.yaml -n masterspace
+service/mastersvc created
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

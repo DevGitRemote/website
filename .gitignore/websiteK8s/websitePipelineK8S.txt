@@ -1,0 +1,69 @@
+properties([
+    parameters([
+        choice(choices: ['develop', 'master'], description: 'Select the branch to run', name: 'BRANCH_TO_RUN')
+    ])
+])
+pipeline{
+    agent any
+    environment{
+        DOCKERHUB_CREDENTIALS=credentials('56e911d6')
+    }
+    stages{
+        stage('Git'){
+            agent{
+                label "k8smaster"
+            }
+            steps{
+                git "https://github.com/DevGitRemote/website.git"
+            }
+        }
+        stage('Develop Branch Task'){
+            agent{
+                label "k8smaster"
+            }
+            steps{
+                script{
+                    def selectedBranch = params.BRANCH_TO_RUN
+                    echo "Running task on ${selectedBranch} branch"
+                    // Your build steps for the task here
+                    // For example:
+                    sh "git checkout ${selectedBranch}"
+                    // sh "mvn clean install"
+                    sh "docker build /var/lib/jenkins/workspace/k8sjob -t devrajdock/websitedevelop:latest"
+                    sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
+                    sh "docker push devrajdock/websitedevelop:latest"
+                    sh "docker logout"
+                    sh "kubectl apply -f ./developname.yml"
+                    sh "kubectl apply -f ./developdeploy.yml -n developspace"
+                    sh "kubectl apply -f ./developsvc.yml -n developspace"
+                    // Simulating success for demonstration purposes
+                    currentBuild.result = 'SUCCESS'
+                }
+            }
+            post{
+                success{
+                    script{
+                        def selectedBranch = params.BRANCH_TO_RUN
+					    if (selectedBranch == 'develop'){
+					        echo "First task succeeded. Triggering the second task..."
+						    // Your build steps for the second task on the master branch here
+						    // For example:
+						    sh "git checkout master"
+						    // sh "mvn clean install"
+						    sh "docker build /var/lib/jenkins/workspace/k8sjob -t devrajdock/websitemaster:latest"
+						    sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
+						    sh "docker push devrajdock/websitemaster:latest"
+						    sh "docker logout"
+						    sh "kubectl apply -f ./mastername.yml"
+						    sh "kubectl apply -f ./deploy.yaml -n masterspace"
+						    sh "kubectl apply -f ./svc.yaml -n masterspace"
+					    }
+                    }
+                }
+                failure{
+                    echo "Task failed, not triggering the subsequent job"
+                }
+            }
+        }
+    }   
+}

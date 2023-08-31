@@ -1,0 +1,78 @@
+Started by user dev
+[Pipeline] Start of Pipeline
+[Pipeline] properties
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/job1
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Git)
+[Pipeline] git
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/job1/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/DevGitRemote/website.git # timeout=10
+Fetching upstream changes from https://github.com/DevGitRemote/website.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.34.1'
+ > git fetch --tags --force --progress -- https://github.com/DevGitRemote/website.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision cbb8b61cc9fa2c96f83771fb19469fa9431cc727 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f cbb8b61cc9fa2c96f83771fb19469fa9431cc727 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master cbb8b61cc9fa2c96f83771fb19469fa9431cc727 # timeout=10
+Commit message: "added service file"
+ > git rev-list --no-walk cbb8b61cc9fa2c96f83771fb19469fa9431cc727 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Develop Branch Task)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+Running task on develop branch
+[Pipeline] sh
++ git checkout develop
+Switched to branch 'develop'
+Your branch is up to date with 'origin/develop'.
+[Pipeline] sh
++ docker build /var/lib/jenkins/workspace/job1 -t develop:01
+Sending build context to Docker daemon  292.4kB
+
+Step 1/5 : FROM ubuntu:latest
+ ---> 01f29b872827
+Step 2/5 : RUN apt update -y
+ ---> Using cache
+ ---> 4f7310861dd6
+Step 3/5 : RUN apt install apache2 -y
+ ---> Using cache
+ ---> 3e61f0632c85
+Step 4/5 : ADD . /var/www/html
+ ---> 7ca42260834d
+Step 5/5 : ENTRYPOINT apachectl -D FOREGROUND
+ ---> Running in 9d18028922b2
+Removing intermediate container 9d18028922b2
+ ---> 566b7771d412
+Successfully built 566b7771d412
+Successfully tagged develop:01
+[Pipeline] sh
++ docker run -itd -p 81:80 --name mycontain -d develop:01
+docker: Error response from daemon: Conflict. The container name "/mycontain" is already in use by container "20ad4fc2e7de5d2b024033e4b621c4d1ecf0324847bfb7a4e9037a02f6fe353e". You have to remove (or rename) that container to be able to reuse that name.
+See 'docker run --help'.
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Task failed, not triggering the subsequent job
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 125
+Finished: FAILURE

@@ -1,0 +1,30 @@
+Started by user dev
+[Pipeline] Start of Pipeline
+[Pipeline] properties
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/job1
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Run Selected Branch Job)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+Running job on null branch
+[Pipeline] sh
++ docker build /var/lib/jenkins/workspace/job1 -t develop:01
+unable to prepare context: unable to evaluate symlinks in Dockerfile path: lstat /var/lib/jenkins/workspace/job1/Dockerfile: no such file or directory
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Selected branch job failed, not triggering subsequent job
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE

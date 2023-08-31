@@ -1,0 +1,55 @@
+Started by user dev
+[Pipeline] Start of Pipeline
+[Pipeline] properties
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/job1
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Git)
+[Pipeline] git
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/DevGitRemote/website.git
+ > git init /var/lib/jenkins/workspace/job1 # timeout=10
+Fetching upstream changes from https://github.com/DevGitRemote/website.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.34.1'
+ > git fetch --tags --force --progress -- https://github.com/DevGitRemote/website.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/DevGitRemote/website.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision cbb8b61cc9fa2c96f83771fb19469fa9431cc727 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f cbb8b61cc9fa2c96f83771fb19469fa9431cc727 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git checkout -b master cbb8b61cc9fa2c96f83771fb19469fa9431cc727 # timeout=10
+Commit message: "added service file"
+First time build. Skipping changelog.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Develop Branch Task)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+Running task on null branch
+[Pipeline] sh
++ git checkout null
+error: pathspec 'null' did not match any file(s) known to git
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Task failed, not triggering the subsequent job
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE

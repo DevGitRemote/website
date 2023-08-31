@@ -1,0 +1,115 @@
+Started by user dev
+[Pipeline] Start of Pipeline
+[Pipeline] properties
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/job1
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Git)
+[Pipeline] git
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/job1/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/DevGitRemote/website.git # timeout=10
+Fetching upstream changes from https://github.com/DevGitRemote/website.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.34.1'
+ > git fetch --tags --force --progress -- https://github.com/DevGitRemote/website.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision 470ad257b1a8023f0095cec80794a92bb2f7af42 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 470ad257b1a8023f0095cec80794a92bb2f7af42 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master 470ad257b1a8023f0095cec80794a92bb2f7af42 # timeout=10
+Commit message: "Update index.html"
+ > git rev-list --no-walk aac8f2d05a9e432edb7372280a49ac542e7055d3 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Develop Branch Task)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+Running task on develop branch
+[Pipeline] sh
++ git checkout develop
+Switched to branch 'develop'
+Your branch is behind 'origin/develop' by 2 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+[Pipeline] sh
++ docker ps -a -q
++ docker rm -f 22671d126ca7
+22671d126ca7
+[Pipeline] sh
++ docker build /var/lib/jenkins/workspace/job1 -t develop:01
+Sending build context to Docker daemon  313.9kB
+
+Step 1/5 : FROM ubuntu:latest
+ ---> 01f29b872827
+Step 2/5 : RUN apt update -y
+ ---> Using cache
+ ---> 4f7310861dd6
+Step 3/5 : RUN apt install apache2 -y
+ ---> Using cache
+ ---> 3e61f0632c85
+Step 4/5 : ADD . /var/www/html
+ ---> 897f31e22429
+Step 5/5 : ENTRYPOINT apachectl -D FOREGROUND
+ ---> Running in d7cd0583ef43
+Removing intermediate container d7cd0583ef43
+ ---> 662351fcd7c3
+Successfully built 662351fcd7c3
+Successfully tagged develop:01
+[Pipeline] sh
++ docker run -itd -p 81:80 --name mycontain -d develop:01
+7d9d0efbb2ac764428c2f81f06df33ce79fb0d22735a8e31e7dc364ec193caa8
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+First task succeeded. Triggering the second task...
+[Pipeline] sh
++ git checkout master
+Switched to branch 'master'
+[Pipeline] sh
++ docker ps -a -q
++ docker rm -f 7d9d0efbb2ac
+7d9d0efbb2ac
+[Pipeline] sh
++ docker build /var/lib/jenkins/workspace/job1 -t main:01
+Sending build context to Docker daemon  315.9kB
+
+Step 1/5 : FROM ubuntu:latest
+ ---> 01f29b872827
+Step 2/5 : RUN apt update -y
+ ---> Using cache
+ ---> 4f7310861dd6
+Step 3/5 : RUN apt install apache2 -y
+ ---> Using cache
+ ---> 3e61f0632c85
+Step 4/5 : ADD . /var/www/html
+ ---> 790f0cce7707
+Step 5/5 : ENTRYPOINT apachectl -D FOREGROUND
+ ---> Running in 6c0623695943
+Removing intermediate container 6c0623695943
+ ---> ddc3cb47522f
+Successfully built ddc3cb47522f
+Successfully tagged main:01
+[Pipeline] sh
++ docker run -itd -p 82:80 --name mycontain -d main:01
+ce5e77750a9809522ac7b661c9d83e24889349057f8e8e9d844ca96d269e1e87
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
